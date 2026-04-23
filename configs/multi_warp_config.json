@@ -1,0 +1,110 @@
+{
+  "log": {
+    "access": "none",
+    "dnsLog": false,
+    "error": "",
+    "loglevel": "warning",
+    "maskAddress": ""
+  },
+  "api": {
+    "tag": "api",
+    "services": ["HandlerService", "LoggerService", "StatsService"]
+  },
+  "inbounds": [
+    {
+      "tag": "api",
+      "listen": "127.0.0.1",
+      "port": 62789,
+      "protocol": "tunnel",
+      "settings": { "address": "127.0.0.1" }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": { "domainStrategy": "AsIs", "redirect": "", "noises": [] }
+    },
+    {
+      "tag": "warp1",
+      "protocol": "wireguard",
+      "settings": {
+        "secretKey": "QOLTbYtIwPH4zSQTsNpl1bp8miEc8D2/MXBY6fxlGU4=",
+        "address": ["172.16.0.2/32", "2606:4700:110:8187:591a:43fb:c6f0:158b/128"],
+        "peers": [{ "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=", "endpoint": "engage.cloudflareclient.com:2408" }],
+        "mtu": 1280
+      }
+    },
+    {
+      "tag": "warp2",
+      "protocol": "wireguard",
+      "settings": {
+        "secretKey": "0PSEtMyzHE/hH6WQa1fuB7PkQzgaXOMrJIFN3fjfx3c=",
+        "address": ["172.16.0.2/32", "2606:4700:110:8efa:ec88:7e29:1c9f:3fbc/128"],
+        "peers": [{ "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=", "endpoint": "engage.cloudflareclient.com:2408" }],
+        "mtu": 1280
+      }
+    },
+    {
+      "tag": "warp3",
+      "protocol": "wireguard",
+      "settings": {
+        "secretKey": "0OjtHCLmJ/IRsduYrgRHkWlo+jMZqspD0wsV+w4ld1Y=",
+        "address": ["172.16.0.2/32", "2606:4700:110:8891:2e9c:174e:821:7122/128"],
+        "peers": [{ "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=", "endpoint": "engage.cloudflareclient.com:2408" }],
+        "mtu": 1280
+      }
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {}
+    }
+  ],
+  "policy": {
+    "levels": { "0": { "statsUserDownlink": true, "statsUserUplink": true } },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true,
+      "statsOutboundDownlink": false,
+      "statsOutboundUplink": false
+    }
+  },
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": ["api"],
+        "outboundTag": "api"
+      },
+      {
+        "type": "field",
+        "inboundTag": ["user1_inbound"],
+        "outboundTag": "warp1"
+      },
+      {
+        "type": "field",
+        "inboundTag": ["user2_inbound"],
+        "outboundTag": "warp2"
+      },
+      {
+        "type": "field",
+        "inboundTag": ["user3_inbound"],
+        "outboundTag": "warp3"
+      },
+      {
+        "type": "field",
+        "outboundTag": "blocked",
+        "ip": ["geoip:private"]
+      },
+      {
+        "type": "field",
+        "outboundTag": "blocked",
+        "protocol": ["bittorrent"]
+      }
+    ]
+  },
+  "stats": {},
+  "metrics": { "tag": "metrics_out", "listen": "127.0.0.1:11111" }
+}

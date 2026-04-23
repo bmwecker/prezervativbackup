@@ -1,0 +1,49 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 2081,
+      "listen": "127.0.0.1",
+      "protocol": "socks"
+    },
+    {
+      "port": 2082,
+      "listen": "127.0.0.1",
+      "protocol": "http"
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "45.148.118.5",
+            "port": 443,
+            "users": [
+              {
+                "id": "462877e4-2d3e-47a2-ba1c-efd4cbce14fe",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "fingerprint": "firefox",
+          "serverName": "www.microsoft.com",
+          "publicKey": "WmoRX8YHYK0wzDMyaZQip2rwz3-1P2SIRzbgU--QiGg",
+          "shortId": "4cc90bb2dd",
+          "spiderX": "/"
+        }
+      }
+    }
+  ]
+}
